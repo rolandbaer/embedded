@@ -1,0 +1,2 @@
+# avoid having sensitive data in git history
+credentials.h
