@@ -1,3 +1,3 @@
 # embedded
 
-Projects using microcontrolles like Arduino or ESP8266.
+Projects using microcontrollers like Arduino or ESP8266.
