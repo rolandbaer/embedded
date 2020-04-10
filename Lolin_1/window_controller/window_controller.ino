@@ -27,6 +27,7 @@ const float HUMIDITY = 45;
 const float TEMPERATURE = 20;
 const unsigned long MEASURE_INTERVAL = 2 * 1000;
 
+enum class Mode {Auto, Manual};
 enum class State {Ready, Opening, OpenWait, OpenMeasure, Closing, Closed};
 
 String printState(State _state) {
@@ -53,6 +54,7 @@ DHT dht(DHTPIN, DHTTYPE, 6);
 // create web server
 ESP8266WebServer webServer(80);
 
+Mode mode = Mode::Auto;
 State state = State::Ready;
 unsigned long timer, interval, last_measure;
 int button_state_open = 0;
@@ -91,6 +93,11 @@ void resetStateMachine() {
   button_state_close = digitalRead(PIN_BUTTON_CLOSE);
 
   state = State::Ready;
+}
+
+void resetRelais() {
+  digitalWrite(PIN_RELAIS_OPEN, LOW);
+  digitalWrite(PIN_RELAIS_CLOSE, LOW);
 }
 
 void initWebServer() {
@@ -137,12 +144,36 @@ void loop() {
     Serial.printf("Measure: Temp %d°C Hum %d%%", (int)temperature, (int)humidity);
     Serial.println("");
   }
-  
-  state_machine_run(process_event_open() || ((current_state_open != button_state_open) && current_state_open),
-                    process_event_close() || ((current_state_close != button_state_close) && current_state_close));
-  button_state_open = current_state_open;
-  button_state_close = current_state_close;
 
+  if(mode == Mode::Auto) {
+    if(event_manual) {
+      event_manual = false;
+      event_auto = false;
+      mode = Mode::Manual;
+      resetStateMachine();
+      resetRelais();
+    }
+    else {
+      state_machine_run(process_event_open() || ((current_state_open != button_state_open) && current_state_open),
+                        process_event_close() || ((current_state_close != button_state_close) && current_state_close));
+      button_state_open = current_state_open;
+      button_state_close = current_state_close;
+    }
+  }
+  else {
+    if(event_auto) {
+      event_manual = false;
+      event_auto = false;
+      mode = Mode::Auto;
+      resetStateMachine();
+      resetRelais();
+    }
+    else {
+      digitalWrite(PIN_RELAIS_OPEN, digitalRead(PIN_BUTTON_OPEN));
+      digitalWrite(PIN_RELAIS_CLOSE, digitalRead(PIN_BUTTON_CLOSE));
+    }
+  }
+  
   webServer.handleClient();
 
   delay(10);
