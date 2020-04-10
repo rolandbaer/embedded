@@ -13,36 +13,36 @@
 #include "credentials.h"
 
 // definitions
-#define PIN_BUTTON_OPEN D6
-#define PIN_BUTTON_CLOSE D7
-#define PIN_RELAIS_OPEN D1
-#define PIN_RELAIS_CLOSE D2
+const uint8_t PIN_BUTTON_OPEN = D6;
+const uint8_t PIN_BUTTON_CLOSE = D7;
+const uint8_t PIN_RELAIS_OPEN = D1;
+const uint8_t PIN_RELAIS_CLOSE = D2;
 
-#define DHTPIN D5         // pin where the sensor is connected to
-#define DHTTYPE DHT11     // define the type of sensor (DHT11 or DHT22)
+const uint8_t DHTPIN = D5;         // pin where the sensor is connected to
+const uint8_t DHTTYPE = DHT11;     // define the type of sensor (DHT11 or DHT22)
 
-#define RELAIS_INTERVAL 10 * 1000
-#define KEEP_OPEN_INTERVAL 10 * 1000
-#define HUMIDITY 45
-#define TEMPERATURE 20
-#define MEASURE_INTERVAL 2 * 1000
+const unsigned long RELAIS_INTERVAL = 10 * 1000;
+const unsigned long KEEP_OPEN_INTERVAL = 10 * 1000;
+const float HUMIDITY = 45;
+const float TEMPERATURE = 20;
+const unsigned long MEASURE_INTERVAL = 2 * 1000;
 
-enum class State_enum {Ready, Opening, OpenWait, OpenMeasure, Closing, Closed};
+enum class State {Ready, Opening, OpenWait, OpenMeasure, Closing, Closed};
 
-String printState(State_enum _state) {
+String printState(State _state) {
   switch(_state)
   {
-    case State_enum::Ready:
+    case State::Ready:
       return "Ready";
-    case State_enum::Opening:
+    case State::Opening:
       return "Opening";
-    case State_enum::OpenWait:
+    case State::OpenWait:
       return "Open (wait)";
-    case State_enum::OpenMeasure:
+    case State::OpenMeasure:
       return "Open (measure)";
-    case State_enum::Closing:
+    case State::Closing:
       return "Closing";
-    case State_enum::Closed:
+    case State::Closed:
       return "Closed";
   }
 }
@@ -53,7 +53,7 @@ DHT dht(DHTPIN, DHTTYPE, 6);
 // create web server
 ESP8266WebServer webServer(80);
 
-State_enum state = State_enum::Ready;
+State state = State::Ready;
 unsigned long timer, interval, last_measure;
 int button_state_open = 0;
 int button_state_close = 0;
@@ -90,7 +90,7 @@ void resetStateMachine() {
   button_state_open = digitalRead(PIN_BUTTON_OPEN);
   button_state_close = digitalRead(PIN_BUTTON_CLOSE);
 
-  state = State_enum::Ready;
+  state = State::Ready;
 }
 
 void initWebServer() {
@@ -150,7 +150,7 @@ void loop() {
 
 void state_machine_run(int open, int close) {
   switch(state) {
-    case State_enum::Ready:
+    case State::Ready:
       if(open) {
         tr_opening();
         Serial.println("State: Ready -> Opening");
@@ -160,7 +160,7 @@ void state_machine_run(int open, int close) {
         Serial.println("State: Ready -> Closing");
       }
       break;
-    case State_enum::Opening:
+    case State::Opening:
       if(close) {
         tr_stop();
         Serial.println("State: Opening -> Ready");
@@ -171,7 +171,7 @@ void state_machine_run(int open, int close) {
         Serial.println("State: Opening -> OpenWait");
       }
       break;
-    case State_enum::Closing:
+    case State::Closing:
       if(open) {
         tr_stop();
         Serial.println("State: Closing -> Ready");
@@ -182,29 +182,29 @@ void state_machine_run(int open, int close) {
         Serial.println("State: Closing -> Closed");
       }
       break;
-    case State_enum::OpenWait:
+    case State::OpenWait:
       if(close) {
         tr_closing();
         Serial.println("State: OpenWait -> Closing");
       }
       if(timer_passed(timer, interval)) 
       {
-        state = State_enum::OpenMeasure;
+        state = State::OpenMeasure;
         Serial.println("State: OpenWait -> OpenMeasure");
       }
       break;
-    case State_enum::OpenMeasure:
+    case State::OpenMeasure:
       if(close) {
         tr_closing();
         Serial.println("State: OpenMeasure -> Closing");
       }
-      if(dry_or_cold(temperature, humidity)) 
+      if(dry_or_cold(temperature, humidity))
       {
         tr_closing();
         Serial.println("State: OpenMeasure -> Closing");
       }
       break;
-    case State_enum::Closed:        
+    case State::Closed:
       if(open) {
         tr_opening();
         Serial.println("State: Closed -> Opening");
@@ -217,32 +217,32 @@ void tr_opening() {
   timer = millis();
   interval = RELAIS_INTERVAL;
   digitalWrite(PIN_RELAIS_OPEN, HIGH);
-  state = State_enum::Opening;
+  state = State::Opening;
 }
 
 void tr_open() {
   digitalWrite(PIN_RELAIS_OPEN, LOW);
   timer = millis();
   interval = KEEP_OPEN_INTERVAL;
-  state = State_enum::OpenWait;  
+  state = State::OpenWait;
 }
 
 void tr_closing() {
   timer = millis();
   interval = RELAIS_INTERVAL;
   digitalWrite(PIN_RELAIS_CLOSE, HIGH);
-  state = State_enum::Closing;
+  state = State::Closing;
 }
 
 void tr_closed() {
   digitalWrite(PIN_RELAIS_CLOSE, LOW);
-  state = State_enum::Closed;
+  state = State::Closed;
 }
 
 void tr_stop() {
   digitalWrite(PIN_RELAIS_CLOSE, LOW);
   digitalWrite(PIN_RELAIS_OPEN, LOW);
-  state = State_enum::Ready;
+  state = State::Ready;
 }
 
 bool timer_passed(unsigned long _timer, unsigned long _interval) {
@@ -255,7 +255,7 @@ bool dry_or_cold(float _temperature, float _humidity) {
 }
 
 void handle_IndexHtml() {
-  webServer.send(200, "text/html",  buildHtml(temperature,humidity)); 
+  webServer.send(200, "text/html",  buildHtml(temperature,humidity));
 }
 
 void handle_Data() {
@@ -284,25 +284,25 @@ bool process_event_close() {
 void handle_Open() {
   Serial.println("*** Open ***");
   event_open = true;
-  webServer.send(200, "text/html", ""); 
+  webServer.send(200, "text/html", "");
 }
 
 void handle_Close() {
   Serial.println("*** Close ***");
   event_close = true;
-  webServer.send(200, "text/html", ""); 
+  webServer.send(200, "text/html", "");
 }
 
 void handle_Auto() {
   Serial.println("*** Auto ***");
   event_auto = true;
-  webServer.send(200, "text/html", ""); 
+  webServer.send(200, "text/html", "");
 }
 
 void handle_Manual() {
   Serial.println("*** Manual ***");
   event_manual = true;
-  webServer.send(200, "text/html", ""); 
+  webServer.send(200, "text/html", "");
 }
 
 void handle_NotFound(){
