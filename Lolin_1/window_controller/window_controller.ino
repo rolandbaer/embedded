@@ -15,15 +15,18 @@
 // definitions
 const uint8_t PIN_BUTTON_OPEN = D6;
 const uint8_t PIN_BUTTON_CLOSE = D7;
-const uint8_t PIN_RELAIS_OPEN = D1;
-const uint8_t PIN_RELAIS_CLOSE = D2;
+const uint8_t PIN_RELAY_OPEN = D1;
+const uint8_t PIN_RELAY_CLOSE = D2;
 
 const uint8_t PIN_MANUAL_MODE = BUILTIN_LED;
 
 const uint8_t DHTPIN = D5;         // pin where the sensor is connected to
 const uint8_t DHTTYPE = DHT11;     // define the type of sensor (DHT11 or DHT22)
 
-const unsigned long RELAIS_INTERVAL = 10 * 1000;
+const uint8_t RELAY_ON = LOW;   // Inverse Logic: Relay is on if Output is LOW (false)
+const uint8_t RELAY_OFF = HIGH;
+
+const unsigned long RELAY_INTERVAL = 10 * 1000;
 const unsigned long KEEP_OPEN_INTERVAL = 10 * 1000;
 const float HUMIDITY = 45;
 const float TEMPERATURE = 20;
@@ -77,8 +80,8 @@ void setup() {
   pinMode(PIN_BUTTON_OPEN, INPUT);
   pinMode(PIN_BUTTON_CLOSE, INPUT);
 
-  pinMode(PIN_RELAIS_OPEN, OUTPUT);
-  pinMode(PIN_RELAIS_CLOSE, OUTPUT);
+  pinMode(PIN_RELAY_OPEN, OUTPUT);
+  pinMode(PIN_RELAY_CLOSE, OUTPUT);
   pinMode(PIN_MANUAL_MODE, OUTPUT);
 
   resetStateMachine();
@@ -100,8 +103,8 @@ void resetStateMachine() {
 }
 
 void resetRelais() {
-  digitalWrite(PIN_RELAIS_OPEN, LOW);
-  digitalWrite(PIN_RELAIS_CLOSE, LOW);
+  digitalWrite(PIN_RELAY_OPEN, RELAY_OFF);
+  digitalWrite(PIN_RELAY_CLOSE, RELAY_OFF);
   digitalWrite(PIN_MANUAL_MODE, mode != Mode::Manual);  // the builtin LED is on when voltage is LOW (false)
 }
 
@@ -174,8 +177,8 @@ void loop() {
       resetRelais();
     }
     else {
-      digitalWrite(PIN_RELAIS_OPEN, digitalRead(PIN_BUTTON_OPEN));
-      digitalWrite(PIN_RELAIS_CLOSE, digitalRead(PIN_BUTTON_CLOSE));
+      digitalWrite(PIN_RELAY_OPEN, digitalRead(PIN_BUTTON_OPEN) ? RELAY_ON : RELAY_OFF);
+      digitalWrite(PIN_RELAY_CLOSE, digitalRead(PIN_BUTTON_CLOSE) ? RELAY_ON : RELAY_OFF);
     }
   }
   
@@ -251,13 +254,13 @@ void state_machine_run(int open, int close) {
 
 void tr_opening() {
   timer = millis();
-  interval = RELAIS_INTERVAL;
-  digitalWrite(PIN_RELAIS_OPEN, HIGH);
+  interval = RELAY_INTERVAL;
+  digitalWrite(PIN_RELAY_OPEN, RELAY_ON);
   state = State::Opening;
 }
 
 void tr_open() {
-  digitalWrite(PIN_RELAIS_OPEN, LOW);
+  digitalWrite(PIN_RELAY_OPEN, RELAY_OFF);
   timer = millis();
   interval = KEEP_OPEN_INTERVAL;
   state = State::OpenWait;
@@ -265,19 +268,19 @@ void tr_open() {
 
 void tr_closing() {
   timer = millis();
-  interval = RELAIS_INTERVAL;
-  digitalWrite(PIN_RELAIS_CLOSE, HIGH);
+  interval = RELAY_INTERVAL;
+  digitalWrite(PIN_RELAY_CLOSE, RELAY_ON);
   state = State::Closing;
 }
 
 void tr_closed() {
-  digitalWrite(PIN_RELAIS_CLOSE, LOW);
+  digitalWrite(PIN_RELAY_CLOSE, RELAY_OFF);
   state = State::Closed;
 }
 
 void tr_stop() {
-  digitalWrite(PIN_RELAIS_CLOSE, LOW);
-  digitalWrite(PIN_RELAIS_OPEN, LOW);
+  digitalWrite(PIN_RELAY_CLOSE, RELAY_OFF);
+  digitalWrite(PIN_RELAY_OPEN, RELAY_OFF);
   state = State::Ready;
 }
 
