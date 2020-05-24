@@ -18,6 +18,8 @@ const uint8_t PIN_BUTTON_CLOSE = D7;
 const uint8_t PIN_RELAIS_OPEN = D1;
 const uint8_t PIN_RELAIS_CLOSE = D2;
 
+const uint8_t PIN_MANUAL_MODE = BUILTIN_LED;
+
 const uint8_t DHTPIN = D5;         // pin where the sensor is connected to
 const uint8_t DHTTYPE = DHT11;     // define the type of sensor (DHT11 or DHT22)
 
@@ -77,9 +79,11 @@ void setup() {
 
   pinMode(PIN_RELAIS_OPEN, OUTPUT);
   pinMode(PIN_RELAIS_CLOSE, OUTPUT);
+  pinMode(PIN_MANUAL_MODE, OUTPUT);
 
   resetStateMachine();
-
+  resetRelais();
+  
   initWebServer();
   
   // initialize measuring
@@ -98,6 +102,7 @@ void resetStateMachine() {
 void resetRelais() {
   digitalWrite(PIN_RELAIS_OPEN, LOW);
   digitalWrite(PIN_RELAIS_CLOSE, LOW);
+  digitalWrite(PIN_MANUAL_MODE, mode != Mode::Manual);  // the builtin LED is on when voltage is LOW (false)
 }
 
 void initWebServer() {
