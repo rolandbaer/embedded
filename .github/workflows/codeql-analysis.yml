@@ -53,6 +53,9 @@ jobs:
         |
         arduino-cli core update-index
         arduino-cli core install arduino:avr
+        arduino-cli config add board_manager.additional_urls http://arduino.esp8266.com/stable/package_esp8266com_index.json
+        arduino-cli config add board_manager.additional_urls https://dl.espressif.com/dl/package_esp32_index.json
+        arduino-cli core install esp8266:esp8266:d1_mini
 
     - name: Static link
       run:
@@ -66,7 +69,7 @@ jobs:
 
     - name: Build example
       run:
-        arduino-cli compile --fqbn arduino:avr:d1_mini $PWD/Lolin_1/buttons_1/buttons_1.ino --warnings=all
+        arduino-cli compile --fqbn esp8266:esp8266:d1_mini $PWD/Lolin_1/buttons_1/buttons_1.ino --warnings=all
 
 
     - name: Perform CodeQL Analysis
