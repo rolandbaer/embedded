@@ -58,7 +58,9 @@ jobs:
         arduino-cli config add board_manager.additional_urls https://dl.espressif.com/dl/package_esp32_index.json
         arduino-cli core update-index
         arduino-cli board listall
-        arduino-cli core install esp8266:esp8266:d1_mini
+        arduino-cli core search esp8266
+        arduino-cli core search d1_mini
+        #arduino-cli core install esp8266:esp8266:d1_mini
 
     - name: Static link
       run:
