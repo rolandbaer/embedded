@@ -79,7 +79,7 @@ jobs:
     - name: Build example 2
       run:
         |
-        cp credentials.h.sample credentials.h
+        cp $PWD/Lolin_1/shelly_parser/credentials.h.sample $PWD/Lolin_1/shelly_parser/credentials.h
         arduino-cli compile --fqbn esp8266:esp8266:d1_mini $PWD/Lolin_1/shelly_parser/shelly_parser.ino --warnings=all
 
     - name: Perform CodeQL Analysis
