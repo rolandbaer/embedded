@@ -60,6 +60,7 @@ jobs:
         arduino-cli core install esp8266:esp8266
         arduino-cli board listall
         arduino-cli core search d1_mini
+        arduino-cli lib install ArduinoJson
 
     - name: Static link
       run:
