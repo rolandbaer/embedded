@@ -71,9 +71,12 @@ jobs:
           chmod +x "$i";
         done
 
-    - name: Build example
+    - name: Build example 1
       run:
         arduino-cli compile --fqbn esp8266:esp8266:d1_mini $PWD/Lolin_1/buttons_1/buttons_1.ino --warnings=all
+
+    - name: Build example 2
+      run:
         arduino-cli compile --fqbn esp8266:esp8266:d1_mini $PWD/Lolin_1/shelly_parser/shelly_parser.ino --warnings=all
 
 
