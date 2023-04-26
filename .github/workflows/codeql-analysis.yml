@@ -61,8 +61,8 @@ jobs:
         arduino-cli board listall
         arduino-cli core search d1_mini
         arduino-cli lib install ArduinoJson
-        arduino-cli lib install Adafruit_Sensor
-        arduino-cli lib install DHT_sensor_library
+        arduino-cli lib install "Adafruit Unified Sensor"
+        arduino-cli lib install "DHT sensor library"
         arduino-cli lib install LiquidCrystal
 
     - name: Static link
