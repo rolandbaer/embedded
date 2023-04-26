@@ -6,6 +6,10 @@ and writes it to the serial interface.
 See my blog post (in German) for
 [more information](https://blog.rolandbaer.ch/2020/03/07/temperatur-und-luftfeuchtigkeit-messen-mit-dem-arduino-nano/).
 
+Required Libraries:
+- Adafruit Unified Sensor by Adafruit (Adafruit_Unified_Sensor)
+- DHT sensor library by Adafruit (DHT_sensor_library)
+
 To run the program you should it connect like in the schema below. Take care
 of the DHT-11 or DHT-12 version you have. Mine had the connectors
 VCC / Data / GND, but there are also modules with Data / VCC / GND!
