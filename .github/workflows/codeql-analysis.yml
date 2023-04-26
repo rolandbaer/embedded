@@ -61,6 +61,9 @@ jobs:
         arduino-cli board listall
         arduino-cli core search d1_mini
         arduino-cli lib install ArduinoJson
+        arduino-cli lib install Adafruit_Unified_Sensor
+        arduino-cli lib install DHT_sensor_library
+        arduino-cli lib install LiquidCrystal
 
     - name: Static link
       run:
@@ -72,11 +75,19 @@ jobs:
           chmod +x "$i";
         done
 
-    - name: Build example 1
+    - name: Build DHT-11 read dht 1
+      run:
+        arduino-cli compile --fqbn arduino:avr:nano:cpu=atmega328 $PWD/DHT-11_1/read_dht_01/read_dht_01.ino --warnings=all
+
+    - name: Build DHT-11 read dht 2
+      run:
+        arduino-cli compile --fqbn arduino:avr:nano:cpu=atmega328 $PWD/DHT-11_1/read_dht_02/read_dht_02.ino --warnings=all
+
+    - name: Build Lolin buttons 1
       run:
         arduino-cli compile --fqbn esp8266:esp8266:d1_mini $PWD/Lolin_1/buttons_1/buttons_1.ino --warnings=all
 
-    - name: Build example 2
+    - name: Build Lolin shelly parser
       run:
         |
         cp $PWD/Lolin_1/shelly_parser/credentials.h.sample $PWD/Lolin_1/shelly_parser/credentials.h
