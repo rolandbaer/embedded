@@ -87,11 +87,27 @@ jobs:
       run:
         arduino-cli compile --fqbn esp8266:esp8266:d1_mini $PWD/Lolin_1/buttons_1/buttons_1.ino --warnings=all
 
+    - name: Build Lolin DHT Webserver
+      run:
+        |
+        cp $PWD/Lolin_1/dht_webserver/credentials.h.sample $PWD/Lolin_1/dht_webserver/credentials.h
+        arduino-cli compile --fqbn esp8266:esp8266:d1_mini $PWD/Lolin_1/dht_webserver/dht_webserver.ino --warnings=all
+
     - name: Build Lolin shelly parser
       run:
         |
         cp $PWD/Lolin_1/shelly_parser/credentials.h.sample $PWD/Lolin_1/shelly_parser/credentials.h
         arduino-cli compile --fqbn esp8266:esp8266:d1_mini $PWD/Lolin_1/shelly_parser/shelly_parser.ino --warnings=all
+
+    - name: Build Lolin state machine 1
+      run:
+        arduino-cli compile --fqbn esp8266:esp8266:d1_mini $PWD/Lolin_1/state_machine_1/state_machine_1.ino --warnings=all
+
+    - name: Build Lolin window controller
+      run:
+        |
+        cp $PWD/Lolin_1/window_controller/credentials.h.sample $PWD/Lolin_1/window_controller/credentials.h
+        arduino-cli compile --fqbn esp8266:esp8266:d1_mini $PWD/Lolin_1/window_controller/window_controller.ino --warnings=all
 
     - name: Perform CodeQL Analysis
       uses: github/codeql-action/analyze@v2
