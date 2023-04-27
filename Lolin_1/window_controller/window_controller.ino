@@ -18,7 +18,7 @@ const uint8_t PIN_BUTTON_CLOSE = D7;
 const uint8_t PIN_RELAY_OPEN = D1;
 const uint8_t PIN_RELAY_CLOSE = D2;
 
-const uint8_t PIN_MANUAL_MODE = BUILTIN_LED;
+const uint8_t PIN_MANUAL_MODE = LED_BUILTIN;
 
 const uint8_t DHTPIN = D5;         // pin where the sensor is connected to
 const uint8_t DHTTYPE = DHT11;     // define the type of sensor (DHT11 or DHT22)
@@ -51,6 +51,8 @@ String printState(State _state) {
     case State::Closed:
       return "Closed";
   }
+
+  return "Unknown";
 }
 
 // create instance of DHT                          
