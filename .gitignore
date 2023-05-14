@@ -1,2 +1,5 @@
 # avoid having sensitive data in git history
 credentials.h
+
+# ignore installed libraries
+libraries
