@@ -53,6 +53,7 @@ String printState(State _state) {
     case State::Closed:
       return "Closed";
   }
+  return "";
 }
 
 // create instance of DHT
