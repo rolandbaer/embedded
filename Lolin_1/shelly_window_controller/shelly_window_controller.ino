@@ -15,9 +15,8 @@
 #include "credentials.h"
 
 // definitions
-#define SHELLY_IP "192.168.1.108:8080"
 #define COVER_ID "0"
-const unsigned long KEEP_OPEN_INTERVAL = 1 * 60 * 1000;
+const unsigned long KEEP_OPEN_INTERVAL = 5 * 60 * 1000;
 const float HUMIDITY = 55;
 const float TEMPERATURE = 20;
 const unsigned long MEASURE_INTERVAL = 5 * 1000;
